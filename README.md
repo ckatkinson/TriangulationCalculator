@@ -8,9 +8,15 @@ book "Topology of Surfaces". Just to see if I could, I decided to learn a bit mo
 
 To use this, first be sure to have a working Julia installation.
 
-Start the Julia REPL from the directory in which you have the file Triangulation.jl and import the module by typing:
+Start the Julia REPL from the directory in which you have the file Triangulation.jl. You'll need to add the path to the LOAD_PATH array:
+    
+    push!(LOAD_PATH, "./")
+    
+(You can get around doing this every time you start julia by adding the above command to ~/julia/config/startup.jl) I'm assuming that you're working on Mac or Linux. I don't know about how to specify path on a Windows machine. Sorry!
+    
+Then import the module by typing:
 
-`using Triangulation`
+    using Triangulation
 
 You can then build up a simplicial complex. There are various ways of constructing a complex (see the code for the various constructors). The most straightforward ways is via specifying the list of triangles. Vertices are named by integers. Here's an example complex:
 
