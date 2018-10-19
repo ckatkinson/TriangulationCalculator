@@ -139,6 +139,19 @@ function adjacenttriangle(Δ::Triangle, e::Edge, cpx::SimplicialComplex)
 end
 export adjacenttriangle
 
+#computes the boundary of a complex. Here, we'll usually compute it for a
+#subcomplex
+
+function boundary( cpx::SimplicialComplex )
+  bdy = Edge[]
+  for e in cpx.K₁
+	if length(edgefan(e, cpx)) == 1
+	  push!(bdy,e)
+	end
+  end
+  return bdy
+end
+
 #Boolean value. Checks if the star of a vertex v in complex cpx is disklike (#2 in Kinsley's
 #triangulated surface definition. Assumes that every edge is in exactly two
 #triangles. The way it works is to just start at an arbitrary triangle in the
@@ -147,8 +160,13 @@ export adjacenttriangle
 #When we return to the starting triangle, if the counter value equals the number
 #of triangles in the star, then the star is disklike.
 #This also assumes that the complex is ACTUALLY simplicial
+#
 #TODO: think about whether and how to check that cpx is actually simplicial. I'm
 #pretty sure that our struct is cool with non-simplicial triangulations. 
+#
+#I think I could drastically simplify the code below using boundary. In
+#short, if we can show that the boundary of the star of the vertex v is a
+#single connected circle, then v is disklike.
 
 function isdisklike( v::Vertex, cpx::SimplicialComplex )
     starv = star(v, cpx)
@@ -214,18 +232,6 @@ function issurface( cpx::SimplicialComplex)
 end
 export issurface
 
-#computes the boundary of a complex. Here, we'll usually compute it for a
-#subcomplex
-
-function boundary( cpx::SimplicialComplex )
-  bdy = Edge[]
-  for e in cpx.K₁
-	if length(edgefan(e, cpx)) == 1
-	  push!(bdy,e)
-	end
-  end
-  return bdy
-end
 
 
 #checks if triangulated surface is connected. Does this need to be
