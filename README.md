@@ -27,7 +27,7 @@ Also, we can compute its Euler characteristic
 
     eulercharacteristic(cpx)
     
-and get 2. If we knew that cpx was connected and orientable, we would know what surface it was (if we have covered chapter 5 at this point (which we haven't (but will soon))).
+and get 2. If we knew that cpx was connected and orientable, we would know what surface it was (if we had covered chapter 5 at this point (which we haven't (but will soon))).
  
  
 
