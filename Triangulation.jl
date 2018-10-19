@@ -214,4 +214,52 @@ function issurface( cpx::SimplicialComplex)
 end
 export issurface
 
+#computes the boundary of a complex. Here, we'll usually compute it for a
+#subcomplex
+
+function boundary( cpx::SimplicialComplex )
+  bdy = Edge[]
+  for e in cpx.K₁
+	if length(edgefan(e, cpx)) == 1
+	  push!(bdy,e)
+	end
+  end
+  return bdy
+end
+
+
+#checks if triangulated surface is connected. Does this need to be
+#specialized to just surfaces or will the ideas from the combinatorial
+#connectedness theorem work for general triangulations? I have to think about
+#that. Right now, it assumes that cpx is a surface
+
+function isconnected( cpx::SimplicialComplex)
+  if issurface(cpx)
+  inittriangle = cpx.K₂[1]
+  componenttwoskel = Triangle[inittriangle]
+  component = SimplicialComplex(componenttwoskel)
+  cptbdy = boundary(component)
+  while !(issurface(component)) #If I can figure out how to check if we've enumerated a whole 
+							    #component, things will work for general complexes...
+	  for e in cptbdy
+		efan = edgefan(e, cpx)
+		for tri in efan
+		  if !(tri in componenttwoskel)
+			push!(componenttwoskel, tri)
+		  end
+		end
+	  end
+	  component = SimplicialComplex(componenttwoskel)
+	  cptbdy = boundary(component)
+  end
+  if length(component.K₂) == length(cpx.K₂)
+    return true
+  else return false
+  end
+end
+println("Sorry! This only checks if closed surfaces are connected right now.\n 
+		Your complex is not a closed surface")
+end
+export isconnected
+
 end
