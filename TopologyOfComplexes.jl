@@ -2,7 +2,7 @@ module TopologyOfComplexes
 
 using Complexes
 export Vertex, Edge, Triangle, OneComplex, SimplicialComplex, star
-export adjacenttriangle, edgefan, randomtriangulation
+export adjacenttriangle, adjacentedge, edgefan, randomtriangulation, boundary
 
 #Computes euler characteristic
 function eulercharacteristic( simp::SimplicialComplex )
@@ -14,21 +14,21 @@ end
 export eulercharacteristic
 
 
-#Boolean value. Checks if the star of a vertex v in complex cpx is disklike (#2 in Kinsley's
-#triangulated surface definition. Assumes that every edge is in exactly two
-#triangles. The way it works is to just start at an arbitrary triangle in the
-#star, and move to one of the two possible "next" triangles (cyclically around
-#v) in the star. Each time we move to another triangle, increment a counter.
-#When we return to the starting triangle, if the counter value equals the number
-#of triangles in the star, then the star is disklike.
+#Boolean value. Checks if the star of a vertex v in complex cpx is disklike (#2
+#in Kinsley's triangulated surface definition. Assumes that every edge is in
+#exactly two triangles. The way it works is to just start at an arbitrary
+#triangle in the star, and move to one of the two possible "next" triangles
+#(cyclically around v) in the star. Each time we move to another triangle,
+#increment a counter.  When we return to the starting triangle, if the counter
+#value equals the number of triangles in the star, then the star is disklike.
 #This also assumes that the complex is ACTUALLY simplicial
 #
 #TODO: think about whether and how to check that cpx is actually simplicial. I'm
 #pretty sure that our struct is cool with non-simplicial triangulations. 
 #
-#I think I could drastically simplify the code below using boundary. In
-#short, if we can show that the boundary of the star of the vertex v is a
-#single connected circle, then v is disklike.
+#I think I could drastically simplify the code below using boundary. In short,
+#if we can show that the boundary of the star of the vertex v is a single
+#connected circle, then v is disklike.
 
 function isdisklike( v::Vertex, cpx::SimplicialComplex )
     starv = star(v, cpx)
@@ -52,6 +52,16 @@ function isdisklike( v::Vertex, cpx::SimplicialComplex )
 end
 export isdisklike
 
+#isonemanifold checks if a OneComplex is a closed 1-manifold. Simply need to check that
+#each vertex is in exactly two edges.
+function isonemanifold( cpx::OneComplex )
+    for vertex in cpx.K₀
+        if length(edgesfromvertex(vertex, cpx)) != 2
+            return false
+        end
+    end
+    return true
+end
 
 
 #issurface function implements the algorithm suggested by the definition of a
@@ -80,6 +90,43 @@ function issurface( cpx::SimplicialComplex)
 end
 export issurface
 
+#checks of one-manifold is connected
+#
+function isconnected( cpx::OneComplex )
+    if isonemanifold(cpx)
+        initedge = cpx.K₁[1]
+        componentoneskel = Edge[initedge]
+        component = OneComplex(componentoneskel)
+        cptbdy = boundary(component)
+        while !(isonemanifold(component))
+            for v in cptbdy
+                estar = edgesfromvertex(v, cpx)
+                for edge in estar
+                    if !(edge in componentoneskel)
+                        push!(componentoneskel, edge)
+                    end
+                end
+            end
+            component = OneComplex(componentoneskel)
+            cptbdy = boundary(component)
+        end
+        if length(component.K₁) == length(cpx.K₁)
+            return true
+        else return false
+        end
+    end
+println("Sorry! This only checks if closed one-manifolds are connected right now.\n 
+		Your complex is not a closed one-manifold")
+end
+
+#I'm pretty sure that this works. WAY easier than the previous isdisklike
+##TODO: Some problem here. Boundary not quite right...
+function isdisklikemk2( v::Vertex, cpx::SimplicialComplex )
+    starv = SimplicialComplex(star(v, cpx))
+    bstarv = OneComplex(boundary(starv))
+    return isonemanifold(bstarv) && isconnected(bstarv)
+end
+export isdisklikemk2
 
 
 #checks if triangulated surface is connected. Does this need to be

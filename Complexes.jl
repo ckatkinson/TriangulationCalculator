@@ -125,8 +125,8 @@ function star( v::Vertex, cpx::SimplicialComplex )
 end
 export star
 
-#returns array of edges containing v in cpx
-function edgesfromvertex( v::Vertex, cpx::SimplicialComplex )
+#returns array of edges containing v in cpx (Works for Simplicial or One)
+function edgesfromvertex( v::Vertex, cpx )
     oneskel = cpx.K₁
     edges = Edge[]
     for e in oneskel
@@ -140,10 +140,17 @@ end
 #returns triangle adjacent to Δ across edge in cpx
 function adjacenttriangle(Δ::Triangle, e::Edge, cpx::SimplicialComplex)
     twoskel = copy(cpx.K₂)
-    filter!(tri -> (e.head in verticesof(tri) && e.tail in verticesof(tri) && tri !=    Δ), twoskel)
+    filter!(tri -> (e.head in verticesof(tri) && e.tail in verticesof(tri) && tri != Δ), twoskel)
     return twoskel[1]
 end
 export adjacenttriangle
+
+#returns edge adjacent to e across vertex v in cpx::OneComplex
+function adjacentedge(e::Edge, v::Vertex, cpx::OneComplex)
+    otheredge = filter!( edge -> edge!=e, edgesfromvertex(v, cpx))
+    return otheredge[1]
+end
+export adjacentedge
 
 #computes the boundary of a complex. Here, we'll usually compute it for a
 #subcomplex
@@ -157,6 +164,17 @@ function boundary( cpx::SimplicialComplex )
   end
   return bdy
 end
+
+function boundary( cpx::OneComplex )
+    bdy = Vertex[]
+    for v in cpx.K₀
+        if length(edgesfromvertex(v, cpx)) == 1
+            push!(bdy,e)
+        end
+    end
+    return bdy
+end
+export boundary
 
 #returns set of triangles in cps containing edge e
 function edgefan( e::Edge, cpx::SimplicialComplex )
