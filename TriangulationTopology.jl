@@ -1,6 +1,8 @@
 module TriangulationTopology
 #This module contains basic simplicial complex constructors and operations to
 #access basic combinatorial info about them.
+#
+#Also, functions to test various topological properties are included
 
 #### Basic cells:
 #
