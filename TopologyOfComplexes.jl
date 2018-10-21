@@ -1,6 +1,8 @@
 module TopologyOfComplexes
 
 using Complexes
+export Vertex, Edge, Triangle, OneComplex, SimplicialComplex, star
+export adjacenttriangle, edgefan, randomtriangulation
 
 #Computes euler characteristic
 function eulercharacteristic( simp::SimplicialComplex )
