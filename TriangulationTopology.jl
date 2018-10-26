@@ -113,9 +113,19 @@ function nuTriangle( verts::Array{Int,1} )
     end
 end
 
+
+###Some type unions:
+#
+
+Vertices = Union{Vertex, nuVertex}
+Edges = Union{Edge, nuEdge}
+Triangles = Union{Triangle, nuTriangle}
+Cells = Union{Vertex, Edge, Triangle}
+NuCells = Union{nuVertex, nuEdge, nuTriangle}
+
+
 #method to anonymize (make non-unique) a cell
-#NEED to look up that <: thing to figure out how to check if cell is a cell.
-function anonymize( cell )
+function anonymize( cell::Cells )
     if typeof(cell) == Vertex
         return nuVertex(cell.index)
     end
@@ -129,31 +139,18 @@ function anonymize( cell )
 end
 
 
-#Hmmm. How to return with no ids? As stated, this only will return with ids (but
-#it makes SimplicialComplex work like this!
-function edgesof( Δ::Triangle, no_ids=true::Bool )
-    if !no_ids
-        edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
-        return edges
-    end
+###Get array of edges or vertice:
+function edgesof( Δ::Triangles )
+    edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
+    return edges
 end
 
-##no_ids = true leaves off uuids (by default). If you want uuids, include false
-#as second argument
-function verticesof( Δ::Triangle, no_ids=true::Bool)
-    if no_ids
-        return [Δ.vertex1.index, Δ.vertex2.index, Δ.vertex3.index]
-    else
-        return [Δ.vertex1, Δ.vertex2, Δ.vertex3]
-    end
+function verticesof( Δ::Triangles)
+    return [Δ.vertex1, Δ.vertex2, Δ.vertex3]
 end
 
-function verticesof( e::Edge, no_ids=true::Bool )
-    if no_ids
-        return [e.head.index, e.tail.index]
-    else
-        return [e.head, e.tail]
-    end
+function verticesof( e::Edges )
+    return [e.head, e.tail]
 end
 
 ###equiv ignores uuids when checking for equivalence. 
@@ -208,12 +205,12 @@ function SimplicialComplex( K₂::Array{Triangle} )
     K₀ = Vertex[]
     K₁ = Edge[]
     for Δ ∈ K₂
-        for vertex in verticesof(Δ, false)
+        for vertex in verticesof(Δ)
             if !(vertex in K₀)
                 push!(K₀, vertex)
             end
         end
-        for edge in edgesof(Δ, false)
+        for edge in edgesof(Δ)
             if !(edge in K₁)
                 push!(K₁, edge)
             end
@@ -294,7 +291,7 @@ function edgefan( e::Edge, cpx::SimplicialComplex )
     output = Triangle[]
     twoskel = cpx.K₂
     for tri in twoskel
-        if e in edgesof(tri, false)
+        if e in edgesof(tri)
             push!(output, tri)
         end
     end
