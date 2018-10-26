@@ -183,7 +183,8 @@ function edgesfromvertex( v::Vertex, cpx )
     oneskel = cpx.K₁
     edges = Edge[]
     for e in oneskel
-        if e.head == v || e.tail == v
+        #if e.head == v || e.tail == v
+        if equiv(e.head, v) || equiv(e.tail, v)
             push!(edges, e)
         end
     end
@@ -235,7 +236,7 @@ function edgefan( e::Edge, cpx::SimplicialComplex )
     output = Triangle[]
     twoskel = cpx.K₂
     for tri in twoskel
-        if e in edgesof(tri)
+        if e in edgesof(tri, false)
             push!(output, tri)
         end
     end
