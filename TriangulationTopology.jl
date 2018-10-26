@@ -26,20 +26,28 @@ end
 struct Edge
     head::Vertex
     tail::Vertex
+    id::UUID
 end
 export Edge
+
+function Edge(v::Vertex, w::Vertex)
+    iden = uuid1(rng)
+    return Edge(v, w, iden)
+end
 
 #construct edge directly from vertex indices
 function Edge(a::Int, b::Int)
     u = Vertex(a)
     v = Vertex(b)
-    return Edge(u,v)
+    iden = uuid1(rng)
+    return Edge(u,v,iden)
 end
 
 struct Triangle
     vertex1::Vertex
     vertex2::Vertex
     vertex3::Vertex
+    id::UUID
 end
 export Triangle
 
@@ -49,13 +57,15 @@ function Triangle( a::Int, b::Int, c::Int )
     u = Vertex(a)
     v = Vertex(b)
     w = Vertex(c)
-    return Triangle(u, v, w)
+    iden = uuid1(rng)
+    return Triangle(u, v, w, iden)
 end
 
 #another to construct from Array{Int64}
 function Triangle( verts::Array{Int,1} )
+    iden = uuid1(rng)
     if length(verts) == 3
-        return Triangle(verts...)
+        return Triangle(verts...,iden)
     else
         println("input must be an array of length 3")
     end
