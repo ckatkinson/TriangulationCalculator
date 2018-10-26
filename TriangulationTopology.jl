@@ -310,24 +310,24 @@ function isconnected( cpx::SimplicialComplex)
   componenttwoskel = Triangle[inittriangle]
   component = SimplicialComplex(componenttwoskel)
   cptbdy = boundary(component)
-  while !(issurface(component)) #If I can figure out how to check if we've enumerated a whole 
-							    #component, things will work for general complexes...
-	  for e in cptbdy
-		efan = edgefan(e, cpx)
-		for tri in efan
-		  if !(tri in componenttwoskel)
-			push!(componenttwoskel, tri)
-		  end
-		end
-	  end
-	  component = SimplicialComplex(componenttwoskel)
-	  cptbdy = boundary(component)
+    while !(issurface(component)) #If I can figure out how to check if we've enumerated a whole 
+      						    #component, things will work for general complexes...
+        for e in cptbdy
+      	efan = edgefan(e, cpx)
+      	for tri in efan
+      	  if !(tri in componenttwoskel)
+      		push!(componenttwoskel, tri)
+      	  end
+      	end
+        end
+        component = SimplicialComplex(componenttwoskel)
+        cptbdy = boundary(component)
+    end
+      if length(component.K₂) == length(cpx.K₂)
+        return true
+      else return false
+    end
   end
-  if length(component.K₂) == length(cpx.K₂)
-    return true
-  else return false
-  end
-end
 println("Sorry! This only checks if closed surfaces are connected right now.\n 
 		Your complex is not a closed surface")
 end

@@ -29,11 +29,17 @@ This is a simplicial complex on the 2-sphere. We can check that it is a surface 
     
 It should return true for this example.
 
+We can also check that it is connected by running
+
+    isconnected(cpx)
+    
+It should return true for this example.
+
 Also, we can compute its Euler characteristic
 
     eulercharacteristic(cpx)
     
-and get 2. If we knew that cpx was connected and orientable, we would know what surface it was (if we had covered chapter 5 at this point (which we haven't (but will soon))).
+and get 2. If we knew that cpx was orientable, we would know what surface it was (if we had covered chapter 5 at this point (which we haven't (but will soon))).
  
  
 
