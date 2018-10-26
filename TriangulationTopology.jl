@@ -10,7 +10,8 @@ rng = MersenneTwister(8675309);
 #
 #Also, functions to test various topological properties are included
 
-#### Basic cells:
+#### Basic cells. Each comes with a uuid so that multiple instances don't
+#conglomerate:
 #
 struct Vertex
     index::Int
@@ -50,8 +51,6 @@ struct Triangle
     id::UUID
 end
 export Triangle
-
-
 #Constructor for triangle directly from  vertex indices.
 function Triangle( a::Int, b::Int, c::Int )
     u = Vertex(a)
@@ -70,6 +69,65 @@ function Triangle( verts::Array{Int,1} )
         println("input must be an array of length 3")
     end
 end
+
+#####non-unique cells. No uuids. I'm using these to simplify some membership
+#checking
+struct nuVertex
+    index::Int
+end
+export nuVertex
+
+struct nuEdge
+    head::Vertex
+    tail::Vertex
+end
+export nuEdge
+
+function nuEdge(a::Int, b::Int)
+    u = Vertex(a)
+    v = Vertex(b)
+    return nuEdge(u,v)
+end
+
+struct nuTriangle
+    vertex1::Vertex
+    vertex2::Vertex
+    vertex3::Vertex
+end
+export nuTriangle
+
+#Constructor for triangle directly from  vertex indices.
+function nuTriangle( a::Int, b::Int, c::Int )
+    u = Vertex(a)
+    v = Vertex(b)
+    w = Vertex(c)
+    return Triangle(u, v, w )
+end
+
+#another to construct from Array{Int64}
+function nuTriangle( verts::Array{Int,1} )
+    if length(verts) == 3
+        return Triangle(verts...)
+    else
+        println("input must be an array of length 3")
+    end
+end
+
+#method to anonymize (make non-unique) a cell
+#NEED to look up that <: thing to figure out how to check if cell is a cell.
+function anonymize( cell )
+    if typeof(cell) == Vertex
+        return nuVertex(cell.index)
+    end
+    if typeof(cell) == Edge
+        return nuEdge(cell.head, cell.tail)
+    end
+    if typeof(cell) == Triangle
+        return nuTriangle(cell.vertex1, cell.vertex2, cell.vertex3)
+    end
+    return -1
+end
+
 
 #Hmmm. How to return with no ids? As stated, this only will return with ids (but
 #it makes SimplicialComplex work like this!
