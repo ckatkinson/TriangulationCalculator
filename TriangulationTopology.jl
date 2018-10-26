@@ -10,6 +10,29 @@ rng = MersenneTwister(8675309);
 #
 #Also, functions to test various topological properties are included
 
+#Type hierarchy:
+abstract type Cells end
+abstract type nuCells end
+abstract type Vertices end
+abstract type Edges end
+abstract type Triangles end
+
+abstract type Vertices <: Cells end
+abstract type Edges <: Cells end
+abstract type Triangles <: Cells end
+
+abstract type NuVertices <: NuCells end
+abstract type NuEdges <: NuCells end
+abstract type NuTriangles <: NuCells end
+
+abstract type Vertex <: Vertices end
+abstract type Edge <: Edges end
+abstract type Triangle <: Triangles end
+
+abstract type NuVertex <: NuVertices end
+abstract type NuEdge <: NuEdges end
+abstract type NuTriangle <: NuTriangles end
+
 #### Basic cells. Each comes with a uuid so that multiple instances don't
 #conglomerate:
 #
@@ -114,14 +137,6 @@ function nuTriangle( verts::Array{Int,1} )
 end
 
 
-###Some type unions:
-#
-
-Vertices = Union{Vertex, nuVertex}
-Edges = Union{Edge, nuEdge}
-Triangles = Union{Triangle, nuTriangle}
-Cells = Union{Vertex, Edge, Triangle}
-NuCells = Union{nuVertex, nuEdge, nuTriangle}
 
 
 #method to anonymize (make non-unique) a cell
@@ -171,14 +186,15 @@ export equiv
 
 ####One-complexes:
 
+#TODO: make sure that making these type unions works!!!
 struct OneComplex
-    K₀::Array{Vertex,1}
-    K₁::Array{Edge,1}
+    K₀::Array{Vertices,1}
+    K₁::Array{Edges,1}
 end
 export OneComplex
 
 #Construtor to infer vertices directly from array of edges
-function OneComplex( K₁::Array{Edge} )
+function OneComplex( K₁::Array{Edges} )
     K₀ = Vertex[]
     for edge ∈ K₁
         for vertex ∈ verticesof(edge)
@@ -193,15 +209,15 @@ end
 
 ####Two-complexes
 struct SimplicialComplex
-    K₀::Array{Vertex,1}
-    K₁::Array{Edge,1}
-    K₂::Array{Triangle,1}
+    K₀::Array{Vertices,1}
+    K₁::Array{Edges,1}
+    K₂::Array{Triangles,1}
 end
 export SimplicialComplex
 
 
 #Constructor to infer edges and vertices directly from array of triangles.
-function SimplicialComplex( K₂::Array{Triangle} )
+function SimplicialComplex( K₂::Array{Triangles} )
     K₀ = Vertex[]
     K₁ = Edge[]
     for Δ ∈ K₂
