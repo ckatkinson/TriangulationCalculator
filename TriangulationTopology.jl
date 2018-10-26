@@ -1,4 +1,10 @@
 module TriangulationTopology
+
+using UUIDs
+using Random
+rng = MersenneTwister(8675309);
+
+
 #This module contains basic simplicial complex constructors and operations to
 #access basic combinatorial info about them.
 #
@@ -8,8 +14,14 @@ module TriangulationTopology
 #
 struct Vertex
     index::Int
+    id::UUID
 end
 export Vertex
+
+function Vertex(a::Int)
+    iden = uuid1(rng)
+    return Vertex(a, iden)
+end
 
 struct Edge
     head::Vertex
