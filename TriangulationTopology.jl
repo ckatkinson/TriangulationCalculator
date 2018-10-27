@@ -12,31 +12,15 @@ rng = MersenneTwister(8675309);
 
 #Type hierarchy:
 abstract type Cells end
-abstract type nuCells end
-abstract type Vertices end
-abstract type Edges end
-abstract type Triangles end
-
 abstract type Vertices <: Cells end
 abstract type Edges <: Cells end
 abstract type Triangles <: Cells end
 
-abstract type NuVertices <: NuCells end
-abstract type NuEdges <: NuCells end
-abstract type NuTriangles <: NuCells end
-
-abstract type Vertex <: Vertices end
-abstract type Edge <: Edges end
-abstract type Triangle <: Triangles end
-
-abstract type NuVertex <: NuVertices end
-abstract type NuEdge <: NuEdges end
-abstract type NuTriangle <: NuTriangles end
 
 #### Basic cells. Each comes with a uuid so that multiple instances don't
 #conglomerate:
 #
-struct Vertex
+struct Vertex <: Vertices
     index::Int
     id::UUID
 end
@@ -47,7 +31,7 @@ function Vertex(a::Int)
     return Vertex(a, iden)
 end
 
-struct Edge
+struct Edge <: Edges
     head::Vertex
     tail::Vertex
     id::UUID
@@ -67,7 +51,7 @@ function Edge(a::Int, b::Int)
     return Edge(u,v,iden)
 end
 
-struct Triangle
+struct Triangle <: Triangles
     vertex1::Vertex
     vertex2::Vertex
     vertex3::Vertex
@@ -95,36 +79,36 @@ end
 
 #####non-unique cells. No uuids. I'm using these to simplify some membership
 #checking
-struct nuVertex
+struct nuVertex <: Vertices
     index::Int
 end
 export nuVertex
 
-struct nuEdge
-    head::Vertex
-    tail::Vertex
+struct nuEdge <: Edges
+    head::nuVertex
+    tail::nuVertex
 end
 export nuEdge
 
 function nuEdge(a::Int, b::Int)
-    u = Vertex(a)
-    v = Vertex(b)
+    u = nuVertex(a)
+    v = nuVertex(b)
     return nuEdge(u,v)
 end
 
-struct nuTriangle
-    vertex1::Vertex
-    vertex2::Vertex
-    vertex3::Vertex
+struct nuTriangle <: Triangles
+    vertex1::nuVertex
+    vertex2::nuVertex
+    vertex3::nuVertex
 end
 export nuTriangle
 
 #Constructor for triangle directly from  vertex indices.
 function nuTriangle( a::Int, b::Int, c::Int )
-    u = Vertex(a)
-    v = Vertex(b)
-    w = Vertex(c)
-    return Triangle(u, v, w )
+    u = nuVertex(a)
+    v = nuVertex(b)
+    w = nuVertex(c)
+    return nuTriangle(u, v, w )
 end
 
 #another to construct from Array{Int64}
@@ -135,8 +119,6 @@ function nuTriangle( verts::Array{Int,1} )
         println("input must be an array of length 3")
     end
 end
-
-
 
 
 #method to anonymize (make non-unique) a cell
@@ -157,6 +139,16 @@ end
 ###Get array of edges or vertice:
 function edgesof( Δ::Triangles )
     edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
+    return edges
+end
+
+function edgesof( Δ::Triangle )
+    edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
+    return edges
+end
+
+function edgesof( Δ::nuTriangle )
+    edges = [nuEdge(Δ.vertex1, Δ.vertex2), nuEdge(Δ.vertex1, Δ.vertex3), nuEdge(Δ.vertex2, Δ.vertex3)]
     return edges
 end
 
@@ -186,7 +178,6 @@ export equiv
 
 ####One-complexes:
 
-#TODO: make sure that making these type unions works!!!
 struct OneComplex
     K₀::Array{Vertices,1}
     K₁::Array{Edges,1}
