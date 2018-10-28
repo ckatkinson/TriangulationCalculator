@@ -249,7 +249,6 @@ function SimplicialComplex( K₂::Array{<:Triangles} )
 end
 
 
-#TODO: FIX THIS. everyhting is good up until here.
 #Returns the star of vertex v in cpx (all triangles in cpx  that contain v)
 function star( v::Vertices, cpx::SimplicialComplex )
     output = Triangles[]
