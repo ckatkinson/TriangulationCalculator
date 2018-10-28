@@ -9,6 +9,9 @@ rng = MersenneTwister(8675309);
 #access basic combinatorial info about them.
 #
 #Also, functions to test various topological properties are included
+#
+#
+########IDK where this goes. Need research.
 
 #Type hierarchy:
 abstract type Cells end
@@ -17,8 +20,10 @@ abstract type Edges <: Cells end
 abstract type Triangles <: Cells end
 export Cells, Vertices, Edges, Triangles
 
-#### Basic cells. Each comes with a uuid so that multiple instances don't
-#conglomerate:
+
+
+#### Basic cells. Each uniqCell comes with a uuid so that multiple instances don't
+#conglomerate. :
 #
 struct uniqVertex <: Vertices
     index::Int
@@ -121,6 +126,9 @@ function Triangle( verts::Array{Int,1} )
 end
 
 
+##################^^^^^THat's one file, I think.
+
+
 #method to anonymize (make non-unique) a cell
 function anonymize( cell::Cells )
     if typeof(cell) == uniqVertex
@@ -139,6 +147,10 @@ function anonymize( cell::Cells )
     return -1
 end
 export anonymize
+
+
+
+##################^^^^^THat's one file, I think.
 
 
 ###Get array of edges or vertice:
@@ -171,6 +183,7 @@ end
 
 export edgesof, verticesof
 
+
 ###equiv ignores uuids when checking for equivalence. 
 
 function equiv( x::Cells, y::Cells)
@@ -180,23 +193,11 @@ function equiv( x::Cells, y::Cells)
         return false   
     end
 end
-
-
-#I think what I've learned about abstract types (see prev function def) makes
-#the following unnecessary! SMRT!
-#function equiv(v::uniqVertex, u::uniqVertex)
-#    return v.index == u.index
-#end
-#
-#function equiv(e::uniqEdge, f::uniqEdge)
-#    return Set(verticesof(e)) == Set(verticesof(f))
-#end
-#
-#function equiv(t::uniqTriangle, u::uniqTriangle)
-#    return Set(verticesof(t)) == Set(verticesof(u))
-#end
-
 export equiv
+
+##################^^^^^THat's one file, I think.
+
+
 
 ####One-complexes:
 
@@ -218,6 +219,7 @@ function OneComplex( K₁::Array{<:Edges} )
     end
     return OneComplex(K₀, K₁)
 end
+
 
 
 ####Two-complexes
@@ -248,6 +250,7 @@ function SimplicialComplex( K₂::Array{<:Triangles} )
     return SimplicialComplex(K₀, K₁, K₂)
 end
 
+##################^^^^^THat's one file, I think.
 
 #Returns the star of vertex v in cpx (all triangles in cpx  that contain v)
 function star( v::Vertices, cpx::SimplicialComplex )
@@ -291,6 +294,20 @@ function adjacentedge(e::Edges, v::Vertices, cpx::OneComplex)
 end
 export adjacentedge
 
+#returns set of triangles in cps containing edge e
+function edgefan( e::Edges, cpx::SimplicialComplex )
+    output = Triangles[]
+    twoskel = cpx.K₂
+    for tri in twoskel
+        if e in edgesof(tri)
+            push!(output, tri)
+        end
+    end
+    return output
+end
+export edgefan
+
+##################^^^^^THat's one file, I think.
 #computes the boundary of a complex. Here, we'll usually compute it for a
 #subcomplex
 
@@ -314,19 +331,8 @@ function boundary( cpx::OneComplex )
     return bdy
 end
 export boundary
+##################^^^^^THat's one file, I think.
 
-#returns set of triangles in cps containing edge e
-function edgefan( e::Edges, cpx::SimplicialComplex )
-    output = Triangles[]
-    twoskel = cpx.K₂
-    for tri in twoskel
-        if e in edgesof(tri)
-            push!(output, tri)
-        end
-    end
-    return output
-end
-export edgefan
 
 #random triangulation having numverts vertices and numtris triangles
 function randomtriangulation( numverts, numtris )
@@ -342,6 +348,7 @@ function randomtriangulation( numverts, numtris )
     return s
 end
 export randomtriangulation
+##################^^^^^THat's one file, I think.
 
 
 ###------------Topology-stuff below------------
@@ -356,6 +363,7 @@ end
 export eulercharacteristic
 
 
+##################^^^^^THat's one file, I think.
 
 
 #isonemanifold checks if a OneComplex is a closed 1-manifold. Simply need to check that
@@ -395,6 +403,7 @@ function issurface( cpx::SimplicialComplex)
     return true
 end
 export issurface
+##################^^^^^THat's one file, I think.
 
 #checks of one-manifold is connected
 #
@@ -424,6 +433,7 @@ function isconnected( cpx::OneComplex )
 println("Sorry! This only checks if closed one-manifolds are connected right now.\n 
 		Your complex is not a closed one-manifold")
 end
+##################^^^^^THat's one file, I think.
 
 #Checks of vertex v is surrounded by a single disk of 2-cells. Condition 2 in
 #Kinsley's triangulated surface definition.
@@ -468,5 +478,6 @@ println("Sorry! This only checks if closed surfaces are connected right now.\n
 		Your complex is not a closed surface")
 end
 export isconnected
+##################^^^^^THat's one file, I think.
 
 end
