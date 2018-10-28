@@ -133,6 +133,9 @@ function anonymize( cell::Cells )
         return Triangle(anonymize(cell.vertex1), anonymize(cell.vertex2), 
                           anonymize(cell.vertex3))
     end
+    if typeof(cell) <: Cells
+        return cell
+    end
     return -1
 end
 export anonymize
@@ -263,7 +266,7 @@ export star
 #returns array of edges containing v in cpx (Works for Simplicial or One)
 function edgesfromvertex( v::Vertices, cpx )
     oneskel = cpx.K₁
-    edges = uniqEdge[]
+    edges = Edges[]
     for e in oneskel
         #if e.head == v || e.tail == v
         if equiv(e.head, v) || equiv(e.tail, v)
@@ -466,7 +469,5 @@ println("Sorry! This only checks if closed surfaces are connected right now.\n
 		Your complex is not a closed surface")
 end
 export isconnected
-
-
 
 end
