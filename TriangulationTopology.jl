@@ -261,7 +261,7 @@ end
 export star
 
 #returns array of edges containing v in cpx (Works for Simplicial or One)
-function edgesfromvertex( v::uniqVertex, cpx )
+function edgesfromvertex( v::Vertices, cpx )
     oneskel = cpx.K₁
     edges = uniqEdge[]
     for e in oneskel
@@ -275,7 +275,7 @@ end
 export edgesfromvertex
 
 #returns triangle adjacent to Δ across edge in cpx
-function adjacenttriangle(Δ::uniqTriangle, e::uniqEdge, cpx::SimplicialComplex)
+function adjacenttriangle(Δ::Triangles, e::Edges, cpx::SimplicialComplex)
     twoskel = copy(cpx.K₂)
     filter!(tri -> (e.head in verticesof(tri) && e.tail in verticesof(tri) && tri != Δ), twoskel)
     return twoskel[1]
@@ -283,7 +283,7 @@ end
 export adjacenttriangle
 
 #returns edge adjacent to e across vertex v in cpx::OneComplex
-function adjacentedge(e::uniqEdge, v::uniqVertex, cpx::OneComplex)
+function adjacentedge(e::Edges, v::Vertices, cpx::OneComplex)
     otheredge = filter!( edge -> edge!=e, edgesfromvertex(v, cpx))
     return otheredge[1]
 end
@@ -293,7 +293,7 @@ export adjacentedge
 #subcomplex
 
 function boundary( cpx::SimplicialComplex )
-  bdy = uniqEdge[]
+  bdy = Edges[]
   for e in cpx.K₁
 	if length(edgefan(e, cpx)) == 1
 	  push!(bdy,e)
@@ -303,7 +303,7 @@ function boundary( cpx::SimplicialComplex )
 end
 
 function boundary( cpx::OneComplex )
-    bdy = uniqVertex[]
+    bdy = Vertices[]
     for v in cpx.K₀
         if length(edgesfromvertex(v, cpx)) == 1
             push!(bdy,v)
@@ -314,8 +314,8 @@ end
 export boundary
 
 #returns set of triangles in cps containing edge e
-function edgefan( e::uniqEdge, cpx::SimplicialComplex )
-    output = uniqTriangle[]
+function edgefan( e::Edges, cpx::SimplicialComplex )
+    output = Triangles[]
     twoskel = cpx.K₂
     for tri in twoskel
         if e in edgesof(tri)
@@ -328,12 +328,12 @@ export edgefan
 
 #random triangulation having numverts vertices and numtris triangles
 function randomtriangulation( numverts, numtris )
-    tris = uniqTriangle[]
+    tris = Triangles[]
     for k in 1:101
         #TODO: add a conditional that checks that a random triangle has three
         #distinct vertices.
         vs = abs.(rand(Int,3).%numverts)
-        t = uniqTriangle(vs)
+        t = Triangles(vs)
         push!(tris, t)
     end
     s = SimplicialComplex(tris)
@@ -399,7 +399,7 @@ export issurface
 function isconnected( cpx::OneComplex )
     if isonemanifold(cpx)
         initedge = cpx.K₁[1]
-        componentoneskel = uniqEdge[initedge]
+        componentoneskel = Edges[initedge]
         component = OneComplex(componentoneskel)
         cptbdy = boundary(component)
         while !(isonemanifold(component))
@@ -425,7 +425,7 @@ end
 
 #Checks of vertex v is surrounded by a single disk of 2-cells. Condition 2 in
 #Kinsley's triangulated surface definition.
-function isdisklike( v::uniqVertex, cpx::SimplicialComplex )
+function isdisklike( v::Vertices, cpx::SimplicialComplex )
     starv = SimplicialComplex(star(v, cpx))
     bstarv = OneComplex(boundary(starv))
     return isonemanifold(bstarv) && isconnected(bstarv)
@@ -441,7 +441,7 @@ export isdisklike
 function isconnected( cpx::SimplicialComplex)
   if issurface(cpx)
   inittriangle = cpx.K₂[1]
-  componenttwoskel = uniqTriangle[inittriangle]
+  componenttwoskel = Triangles[inittriangle]
   component = SimplicialComplex(componenttwoskel)
   cptbdy = boundary(component)
     while !(issurface(component)) #If I can figure out how to check if we've enumerated a whole 
