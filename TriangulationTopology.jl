@@ -20,58 +20,58 @@ export Cells, Vertices, Edges, Triangles
 #### Basic cells. Each comes with a uuid so that multiple instances don't
 #conglomerate:
 #
-struct Vertex <: Vertices
+struct uniqVertex <: Vertices
     index::Int
     id::UUID
 end
-export Vertex
+export uniqVertex
 
-function Vertex(a::Int)
+function uniqVertex(a::Int)
     iden = uuid1(rng)
-    return Vertex(a, iden)
+    return uniqVertex(a, iden)
 end
 
-struct Edge <: Edges
-    head::Vertex
-    tail::Vertex
+struct uniqEdge <: Edges
+    head::uniqVertex
+    tail::uniqVertex
     id::UUID
 end
-export Edge
+export uniqEdge
 
-function Edge(v::Vertex, w::Vertex)
+function uniqEdge(v::uniqVertex, w::uniqVertex)
     iden = uuid1(rng)
-    return Edge(v, w, iden)
+    return uniqEdge(v, w, iden)
 end
 
 #construct edge directly from vertex indices
-function Edge(a::Int, b::Int)
-    u = Vertex(a)
-    v = Vertex(b)
+function uniqEdge(a::Int, b::Int)
+    u = uniqVertex(a)
+    v = uniqVertex(b)
     iden = uuid1(rng)
-    return Edge(u,v,iden)
+    return uniqEdge(u,v,iden)
 end
 
-struct Triangle <: Triangles
-    vertex1::Vertex
-    vertex2::Vertex
-    vertex3::Vertex
+struct uniqTriangle <: Triangles
+    vertex1::uniqVertex
+    vertex2::uniqVertex
+    vertex3::uniqVertex
     id::UUID
 end
-export Triangle
+export uniqTriangle
 #Constructor for triangle directly from  vertex indices.
-function Triangle( a::Int, b::Int, c::Int )
-    u = Vertex(a)
-    v = Vertex(b)
-    w = Vertex(c)
+function uniqTriangle( a::Int, b::Int, c::Int )
+    u = uniqVertex(a)
+    v = uniqVertex(b)
+    w = uniqVertex(c)
     iden = uuid1(rng)
-    return Triangle(u, v, w, iden)
+    return uniqTriangle(u, v, w, iden)
 end
 
 #another to construct from Array{Int64}
-function Triangle( verts::Array{Int,1} )
+function uniqTriangle( verts::Array{Int,1} )
     iden = uuid1(rng)
     if length(verts) == 3
-        return Triangle(verts...,iden)
+        return uniqTriangle(verts...,iden)
     else
         println("input must be an array of length 3")
     end
@@ -79,40 +79,40 @@ end
 
 #####non-unique cells. No uuids. I'm using these to simplify some membership
 #checking
-struct nuVertex <: Vertices
+struct Vertex <: Vertices
     index::Int
 end
-export nuVertex
+export Vertex
 
-struct nuEdge <: Edges
-    head::nuVertex
-    tail::nuVertex
+struct Edge <: Edges
+    head::Vertex
+    tail::Vertex
 end
-export nuEdge
+export Edge
 
-function nuEdge(a::Int, b::Int)
-    u = nuVertex(a)
-    v = nuVertex(b)
-    return nuEdge(u,v)
+function Edge(a::Int, b::Int)
+    u = Vertex(a)
+    v = Vertex(b)
+    return Edge(u,v)
 end
 
-struct nuTriangle <: Triangles
-    vertex1::nuVertex
-    vertex2::nuVertex
-    vertex3::nuVertex
+struct Triangle <: Triangles
+    vertex1::Vertex
+    vertex2::Vertex
+    vertex3::Vertex
 end
-export nuTriangle
+export Triangle
 
 #Constructor for triangle directly from  vertex indices.
-function nuTriangle( a::Int, b::Int, c::Int )
-    u = nuVertex(a)
-    v = nuVertex(b)
-    w = nuVertex(c)
-    return nuTriangle(u, v, w )
+function Triangle( a::Int, b::Int, c::Int )
+    u = Vertex(a)
+    v = Vertex(b)
+    w = Vertex(c)
+    return Triangle(u, v, w )
 end
 
 #another to construct from Array{Int64}
-function nuTriangle( verts::Array{Int,1} )
+function Triangle( verts::Array{Int,1} )
     if length(verts) == 3
         return Triangle(verts...)
     else
@@ -123,14 +123,14 @@ end
 
 #method to anonymize (make non-unique) a cell
 function anonymize( cell::Cells )
-    if typeof(cell) == Vertex
-        return nuVertex(cell.index)
+    if typeof(cell) == uniqVertex
+        return Vertex(cell.index)
     end
-    if typeof(cell) == Edge
-        return nuEdge(anonymize(cell.head), anonymize(cell.tail))
+    if typeof(cell) == uniqEdge
+        return Edge(anonymize(cell.head), anonymize(cell.tail))
     end
-    if typeof(cell) == Triangle
-        return nuTriangle(anonymize(cell.vertex1), anonymize(cell.vertex2), 
+    if typeof(cell) == uniqTriangle
+        return Triangle(anonymize(cell.vertex1), anonymize(cell.vertex2), 
                           anonymize(cell.vertex3))
     end
     return -1
@@ -140,17 +140,17 @@ export anonymize
 
 ###Get array of edges or vertice:
 function edgesof( Δ::Triangles )
-    edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
+    edges = [uniqEdge(Δ.vertex1, Δ.vertex2), uniqEdge(Δ.vertex1, Δ.vertex3), uniqEdge(Δ.vertex2, Δ.vertex3)]
+    return edges
+end
+
+function edgesof( Δ::uniqTriangle )
+    edges = [uniqEdge(Δ.vertex1, Δ.vertex2), uniqEdge(Δ.vertex1, Δ.vertex3), uniqEdge(Δ.vertex2, Δ.vertex3)]
     return edges
 end
 
 function edgesof( Δ::Triangle )
     edges = [Edge(Δ.vertex1, Δ.vertex2), Edge(Δ.vertex1, Δ.vertex3), Edge(Δ.vertex2, Δ.vertex3)]
-    return edges
-end
-
-function edgesof( Δ::nuTriangle )
-    edges = [nuEdge(Δ.vertex1, Δ.vertex2), nuEdge(Δ.vertex1, Δ.vertex3), nuEdge(Δ.vertex2, Δ.vertex3)]
     return edges
 end
 
@@ -181,15 +181,15 @@ end
 
 #I think what I've learned about abstract types (see prev function def) makes
 #the following unnecessary! SMRT!
-#function equiv(v::Vertex, u::Vertex)
+#function equiv(v::uniqVertex, u::uniqVertex)
 #    return v.index == u.index
 #end
 #
-#function equiv(e::Edge, f::Edge)
+#function equiv(e::uniqEdge, f::uniqEdge)
 #    return Set(verticesof(e)) == Set(verticesof(f))
 #end
 #
-#function equiv(t::Triangle, u::Triangle)
+#function equiv(t::uniqTriangle, u::uniqTriangle)
 #    return Set(verticesof(t)) == Set(verticesof(u))
 #end
 
@@ -261,9 +261,9 @@ end
 export star
 
 #returns array of edges containing v in cpx (Works for Simplicial or One)
-function edgesfromvertex( v::Vertex, cpx )
+function edgesfromvertex( v::uniqVertex, cpx )
     oneskel = cpx.K₁
-    edges = Edge[]
+    edges = uniqEdge[]
     for e in oneskel
         #if e.head == v || e.tail == v
         if equiv(e.head, v) || equiv(e.tail, v)
@@ -275,7 +275,7 @@ end
 export edgesfromvertex
 
 #returns triangle adjacent to Δ across edge in cpx
-function adjacenttriangle(Δ::Triangle, e::Edge, cpx::SimplicialComplex)
+function adjacenttriangle(Δ::uniqTriangle, e::uniqEdge, cpx::SimplicialComplex)
     twoskel = copy(cpx.K₂)
     filter!(tri -> (e.head in verticesof(tri) && e.tail in verticesof(tri) && tri != Δ), twoskel)
     return twoskel[1]
@@ -283,7 +283,7 @@ end
 export adjacenttriangle
 
 #returns edge adjacent to e across vertex v in cpx::OneComplex
-function adjacentedge(e::Edge, v::Vertex, cpx::OneComplex)
+function adjacentedge(e::uniqEdge, v::uniqVertex, cpx::OneComplex)
     otheredge = filter!( edge -> edge!=e, edgesfromvertex(v, cpx))
     return otheredge[1]
 end
@@ -293,7 +293,7 @@ export adjacentedge
 #subcomplex
 
 function boundary( cpx::SimplicialComplex )
-  bdy = Edge[]
+  bdy = uniqEdge[]
   for e in cpx.K₁
 	if length(edgefan(e, cpx)) == 1
 	  push!(bdy,e)
@@ -303,7 +303,7 @@ function boundary( cpx::SimplicialComplex )
 end
 
 function boundary( cpx::OneComplex )
-    bdy = Vertex[]
+    bdy = uniqVertex[]
     for v in cpx.K₀
         if length(edgesfromvertex(v, cpx)) == 1
             push!(bdy,v)
@@ -314,8 +314,8 @@ end
 export boundary
 
 #returns set of triangles in cps containing edge e
-function edgefan( e::Edge, cpx::SimplicialComplex )
-    output = Triangle[]
+function edgefan( e::uniqEdge, cpx::SimplicialComplex )
+    output = uniqTriangle[]
     twoskel = cpx.K₂
     for tri in twoskel
         if e in edgesof(tri)
@@ -328,12 +328,12 @@ export edgefan
 
 #random triangulation having numverts vertices and numtris triangles
 function randomtriangulation( numverts, numtris )
-    tris = Triangle[]
+    tris = uniqTriangle[]
     for k in 1:101
         #TODO: add a conditional that checks that a random triangle has three
         #distinct vertices.
         vs = abs.(rand(Int,3).%numverts)
-        t = Triangle(vs)
+        t = uniqTriangle(vs)
         push!(tris, t)
     end
     s = SimplicialComplex(tris)
@@ -399,7 +399,7 @@ export issurface
 function isconnected( cpx::OneComplex )
     if isonemanifold(cpx)
         initedge = cpx.K₁[1]
-        componentoneskel = Edge[initedge]
+        componentoneskel = uniqEdge[initedge]
         component = OneComplex(componentoneskel)
         cptbdy = boundary(component)
         while !(isonemanifold(component))
@@ -425,7 +425,7 @@ end
 
 #Checks of vertex v is surrounded by a single disk of 2-cells. Condition 2 in
 #Kinsley's triangulated surface definition.
-function isdisklike( v::Vertex, cpx::SimplicialComplex )
+function isdisklike( v::uniqVertex, cpx::SimplicialComplex )
     starv = SimplicialComplex(star(v, cpx))
     bstarv = OneComplex(boundary(starv))
     return isonemanifold(bstarv) && isconnected(bstarv)
@@ -441,7 +441,7 @@ export isdisklike
 function isconnected( cpx::SimplicialComplex)
   if issurface(cpx)
   inittriangle = cpx.K₂[1]
-  componenttwoskel = Triangle[inittriangle]
+  componenttwoskel = uniqTriangle[inittriangle]
   component = SimplicialComplex(componenttwoskel)
   cptbdy = boundary(component)
     while !(issurface(component)) #If I can figure out how to check if we've enumerated a whole 
