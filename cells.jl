@@ -15,9 +15,8 @@ abstract type Cells end
 abstract type Vertices <: Cells end
 abstract type Edges <: Cells end
 abstract type Triangles <: Cells end
-export Cells, Vertices, Edges, Triangles
 
-#### Basic cells. Each comes with a uuid so that multiple instances don't
+ Basic cells. Each comes with a uuid so that multiple instances don't
 #conglomerate:
 #
 struct Vertex <: Vertices
@@ -127,15 +126,13 @@ function anonymize( cell::Cells )
         return nuVertex(cell.index)
     end
     if typeof(cell) == Edge
-        return nuEdge(anonymize(cell.head), anonymize(cell.tail))
+        return nuEdge(cell.head, cell.tail)
     end
     if typeof(cell) == Triangle
-        return nuTriangle(anonymize(cell.vertex1), anonymize(cell.vertex2), 
-                          anonymize(cell.vertex3))
+        return nuTriangle(cell.vertex1, cell.vertex2, cell.vertex3)
     end
     return -1
 end
-export anonymize
 
 
 ###Get array of edges or vertice:
@@ -154,10 +151,6 @@ function edgesof( Δ::nuTriangle )
     return edges
 end
 
-function verticesof( v::Vertices)
-    return [v]
-end
-
 function verticesof( Δ::Triangles)
     return [Δ.vertex1, Δ.vertex2, Δ.vertex3]
 end
@@ -166,46 +159,33 @@ function verticesof( e::Edges )
     return [e.head, e.tail]
 end
 
-export edgesof, verticesof
-
 ###equiv ignores uuids when checking for equivalence. 
 
-function equiv( x::Cells, y::Cells)
-    if typeof(x) == typeof(y)  
-        return Set(verticesof(x)) == Set(verticesof(y))
-    else
-        return false   
-    end
+function equiv(v::Vertex, u::Vertex)
+    return v.index == u.index
 end
 
+function equiv(e::Edge, f::Edge)
+    return Set(verticesof(e)) == Set(verticesof(f))
+end
 
-#I think what I've learned about abstract types (see prev function def) makes
-#the following unnecessary! SMRT!
-#function equiv(v::Vertex, u::Vertex)
-#    return v.index == u.index
-#end
-#
-#function equiv(e::Edge, f::Edge)
-#    return Set(verticesof(e)) == Set(verticesof(f))
-#end
-#
-#function equiv(t::Triangle, u::Triangle)
-#    return Set(verticesof(t)) == Set(verticesof(u))
-#end
+function equiv(t::Triangle, u::Triangle)
+    return Set(verticesof(t)) == Set(verticesof(u))
+end
 
 export equiv
 
 ####One-complexes:
 
 struct OneComplex
-    K₀::Array{<:Vertices,1}
-    K₁::Array{<:Edges,1}
+    K₀::Array{Vertices,1}
+    K₁::Array{Edges,1}
 end
 export OneComplex
 
 #Construtor to infer vertices directly from array of edges
-function OneComplex( K₁::Array{<:Edges} )
-    K₀ = Vertices[]
+function OneComplex( K₁::Array{Edges} )
+    K₀ = Vertex[]
     for edge ∈ K₁
         for vertex ∈ verticesof(edge)
             if !(vertex in K₀)
@@ -219,17 +199,17 @@ end
 
 ####Two-complexes
 struct SimplicialComplex
-    K₀::Array{<:Vertices,1}
-    K₁::Array{<:Edges,1}
-    K₂::Array{<:Triangles,1}
+    K₀::Array{Vertices,1}
+    K₁::Array{Edges,1}
+    K₂::Array{Triangles,1}
 end
 export SimplicialComplex
 
 
 #Constructor to infer edges and vertices directly from array of triangles.
-function SimplicialComplex( K₂::Array{<:Triangles} )
-    K₀ = Vertices[]
-    K₁ = Edges[]
+function SimplicialComplex( K₂::Array{Triangles} )
+    K₀ = Vertex[]
+    K₁ = Edge[]
     for Δ ∈ K₂
         for vertex in verticesof(Δ)
             if !(vertex in K₀)
@@ -246,13 +226,12 @@ function SimplicialComplex( K₂::Array{<:Triangles} )
 end
 
 
-#TODO: FIX THIS. everyhting is good up until here.
 #Returns the star of vertex v in cpx (all triangles in cpx  that contain v)
-function star( v::Vertices, cpx::SimplicialComplex )
-    output = Triangles[]
+function star( v::Vertex, cpx::SimplicialComplex )
+    output = Triangle[]
     twoskel = cpx.K₂
     for tri in twoskel
-        if anonymize(v) in verticesof(anonymize(tri))
+        if v in verticesof(tri)
             push!(output, tri)
         end
     end
