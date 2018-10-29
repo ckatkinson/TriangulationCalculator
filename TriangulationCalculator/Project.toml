@@ -1,6 +1,0 @@
-authors = ["Chris Atkinson <catkinso@morris.umn.edu>"]
-name = "TriangulationCalculator"
-uuid = "4bf84484-db0f-11e8-31a0-5bc8943420bc"
-version = "0.1.0"
-
-[deps]
