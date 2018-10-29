@@ -2,11 +2,6 @@
 
 #This file contains basic simplicial complex constructors and operations to
 #access basic combinatorial info about them.
-#
-#Also, functions to test various topological properties are included
-#
-#
-########IDK where this goes. Need research.
 
 #Type hierarchy:
 abstract type Cells end
@@ -17,7 +12,51 @@ export Cells, Vertices, Edges, Triangles
 
 
 
-#### Basic cells. Each uniqCell comes with a uuid so that multiple instances don't
+
+#####Basic cells.
+#
+struct Vertex <: Vertices
+    index::Int
+end
+export Vertex
+
+struct Edge <: Edges
+    head::Vertex
+    tail::Vertex
+end
+export Edge
+
+function Edge(a::Int, b::Int)
+    u = Vertex(a)
+    v = Vertex(b)
+    return Edge(u,v)
+end
+
+struct Triangle <: Triangles
+    vertex1::Vertex
+    vertex2::Vertex
+    vertex3::Vertex
+end
+export Triangle
+
+#Constructor for triangle directly from  vertex indices.
+function Triangle( a::Int, b::Int, c::Int )
+    u = Vertex(a)
+    v = Vertex(b)
+    w = Vertex(c)
+    return Triangle(u, v, w )
+end
+
+#another to construct from Array{Int64}
+function Triangle( verts::Array{Int,1} )
+    if length(verts) == 3
+        return Triangle(verts...)
+    else
+        println("input must be an array of length 3")
+    end
+end
+
+####Each uniqCell comes with a uuid so that multiple instances don't
 #conglomerate. :
 #
 struct uniqVertex <: Vertices
@@ -31,6 +70,8 @@ function uniqVertex(a::Int)
     return uniqVertex(a, iden)
 end
 
+#Want to allow for non-uniq vertices in these. The reason is that I want to be
+#able to glue uniq triangles just by having them share an edge.
 struct uniqEdge <: Edges
     head::uniqVertex
     tail::uniqVertex
@@ -76,50 +117,6 @@ function uniqTriangle( verts::Array{Int,1} )
         println("input must be an array of length 3")
     end
 end
-
-#####non-unique cells. No uuids. I'm using these to simplify some membership
-#checking
-struct Vertex <: Vertices
-    index::Int
-end
-export Vertex
-
-struct Edge <: Edges
-    head::Vertex
-    tail::Vertex
-end
-export Edge
-
-function Edge(a::Int, b::Int)
-    u = Vertex(a)
-    v = Vertex(b)
-    return Edge(u,v)
-end
-
-struct Triangle <: Triangles
-    vertex1::Vertex
-    vertex2::Vertex
-    vertex3::Vertex
-end
-export Triangle
-
-#Constructor for triangle directly from  vertex indices.
-function Triangle( a::Int, b::Int, c::Int )
-    u = Vertex(a)
-    v = Vertex(b)
-    w = Vertex(c)
-    return Triangle(u, v, w )
-end
-
-#another to construct from Array{Int64}
-function Triangle( verts::Array{Int,1} )
-    if length(verts) == 3
-        return Triangle(verts...)
-    else
-        println("input must be an array of length 3")
-    end
-end
-
 
 
 
