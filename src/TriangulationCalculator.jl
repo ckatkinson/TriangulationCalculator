@@ -1,4 +1,4 @@
-module TriangulationTopology
+module TriangulationCalculator
 
 using UUIDs
 using Random

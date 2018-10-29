@@ -16,7 +16,7 @@ Start the Julia REPL from the directory in which you have the file Triangulation
     
 Then import the module by typing:
 
-    using TriangulationTopology
+    using TriangulationCalculator
 
 You can then build up a simplicial complex. There are various ways of constructing a complex (see the code for the various constructors). The most straightforward ways is via specifying the list of triangles. Vertices are named by integers. Here's an example complex:
 
