@@ -15,23 +15,43 @@ export Cells, Vertices, Edges, Triangles
 
 #####Basic cells.
 #
+"""
+    Vertex(a)
+
+Constructs a vertex with index `a`.
+"""
 struct Vertex <: Vertices
     index::Int
 end
 export Vertex
 
+"""
+    Edge(u, v)
+
+Constructs an edge between vertices `u` and `v`.
+"""
 struct Edge <: Edges
     head::Vertex
     tail::Vertex
 end
 export Edge
 
+"""
+    Edge(a, b)
+
+Constructs an edge between vertices `Vertex(a)` and `Vertex(b)`.
+"""
 function Edge(a::Int, b::Int)
     u = Vertex(a)
     v = Vertex(b)
     return Edge(u,v)
 end
 
+"""
+    Triangle(u, v, w)
+
+Constructs a triangle with vertices `u`, `v`, and `w`.
+"""
 struct Triangle <: Triangles
     vertex1::Vertex
     vertex2::Vertex
@@ -39,7 +59,11 @@ struct Triangle <: Triangles
 end
 export Triangle
 
-#Constructor for triangle directly from  vertex indices.
+"""
+    Triangle(a, b, c)
+
+Constructs a triangle with vertices `Vertex(a)`, `Vertex(b)`, and `Vertex(c)`.
+"""
 function Triangle( a::Int, b::Int, c::Int )
     u = Vertex(a)
     v = Vertex(b)
@@ -47,7 +71,18 @@ function Triangle( a::Int, b::Int, c::Int )
     return Triangle(u, v, w )
 end
 
-#another to construct from Array{Int64}
+"""
+    Triangle(verts::Array{Int, 1})
+
+Constructs a triangle with vertex indices coming from a 3-long array of Ints.
+
+# Example
+```jldoctest
+julia> verts = [1, 2, 3];
+julia> t = Triangle(verts)
+Triangle(Vertex(1), Vertex(2), Vertex(3))
+```
+"""
 function Triangle( verts::Array{Int,1} )
     if length(verts) == 3
         return Triangle(verts...)
@@ -56,22 +91,32 @@ function Triangle( verts::Array{Int,1} )
     end
 end
 
-####Each uniqCell comes with a uuid so that multiple instances don't
-#conglomerate. :
-#
+"""
+    uniqVertex(a,id)
+
+Constructs a vertex with index `a` and a uuid `id`.
+"""
 struct uniqVertex <: Vertices
     index::Int
     id::UUID
 end
 export uniqVertex
 
+"""
+    uniqVertex(a)
+
+Constructs a vertex with index `a` and a randomly seeded uuid.
+"""
 function uniqVertex(a::Int)
     iden = uuid1(rng)
     return uniqVertex(a, iden)
 end
 
-#Want to allow for non-uniq vertices in these. The reason is that I want to be
-#able to glue uniq triangles just by having them share an edge.
+"""
+    uniqEdge(u,v,id)
+
+Constructs an edge with vertices `u` and `v` with uuid `id`.
+"""
 struct uniqEdge <: Edges
     head::uniqVertex
     tail::uniqVertex
@@ -79,12 +124,21 @@ struct uniqEdge <: Edges
 end
 export uniqEdge
 
+"""
+    uniqEdge(u,v)
+
+Constructs an edge with vertices `u` and `v` with randomly seeded uuid.
+"""
 function uniqEdge(v::uniqVertex, w::uniqVertex)
     iden = uuid1(rng)
     return uniqEdge(v, w, iden)
 end
 
-#construct edge directly from vertex indices
+"""
+    uniqEdge(a,b)
+
+Constructs an edge with vertices having indices `a` and `b` with randomly seeded uuid.
+"""
 function uniqEdge(a::Int, b::Int)
     u = uniqVertex(a)
     v = uniqVertex(b)
@@ -92,6 +146,12 @@ function uniqEdge(a::Int, b::Int)
     return uniqEdge(u,v,iden)
 end
 
+"""
+    uniqTriangle(u,v,w,id)
+
+Constructs a triangle with vertices `u`, `v`, and `w` with uuid `id`. Note that
+the vertices must be `uniqVertex` This may or may not be what you intend.  
+"""
 struct uniqTriangle <: Triangles
     vertex1::uniqVertex
     vertex2::uniqVertex
@@ -99,7 +159,12 @@ struct uniqTriangle <: Triangles
     id::UUID
 end
 export uniqTriangle
-#Constructor for triangle directly from  vertex indices.
+
+"""
+    uniqTriangle(u,v,w)
+
+Constructs a triangle with vertices with indices `a`, `b`, and `c`. Note that the vertices will be `uniqVertex` This may or may not be what you intend.
+"""
 function uniqTriangle( a::Int, b::Int, c::Int )
     u = uniqVertex(a)
     v = uniqVertex(b)
@@ -108,7 +173,11 @@ function uniqTriangle( a::Int, b::Int, c::Int )
     return uniqTriangle(u, v, w, iden)
 end
 
-#another to construct from Array{Int64}
+"""
+    uniqTriangle(verts::Array{Int, 1})
+
+Constructs a triangle with vertex indices coming from a 3-long array of Ints and randomly seeded uuid.
+"""
 function uniqTriangle( verts::Array{Int,1} )
     iden = uuid1(rng)
     if length(verts) == 3
