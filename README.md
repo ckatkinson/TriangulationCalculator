@@ -8,7 +8,7 @@ book "Topology of Surfaces". Just to see if I could, I decided to learn a bit mo
 
 To use this, first be sure to have a working Julia installation.
 
-Start the Julia REPL from the directory in which you have the file Triangulation.jl. You'll need to add the path to the LOAD_PATH array:
+Start the Julia REPL from the directory in which you have the file TriangulationCalculator.jl. You'll need to add the path to the LOAD_PATH array:
     
     push!(LOAD_PATH, "./")
     
