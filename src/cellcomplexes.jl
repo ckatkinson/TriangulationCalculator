@@ -189,7 +189,11 @@ end
 
 
 
-#method to anonymize (make non-unique) a cell
+"""
+    anonymize(cell::Cells)
+
+Converts uniqCell to a Cell, wiping out the uuid info
+"""
 function anonymize( cell::Cells )
     if typeof(cell) == uniqVertex
         return Vertex(cell.index)
@@ -208,16 +212,21 @@ function anonymize( cell::Cells )
 end
 export anonymize
 
+"""
+    edgesof( Δ )
 
-
-
-
-###Get array of edges or vertice:
+Returns `array{Edges}` containing edges of Δ
+"""
 function edgesof( Δ::Triangles )
     edges = [uniqEdge(Δ.vertex1, Δ.vertex2), uniqEdge(Δ.vertex1, Δ.vertex3), uniqEdge(Δ.vertex2, Δ.vertex3)]
     return edges
 end
 
+"""
+    edgesof( Δ )
+
+Returns `array{Edges}` containing edges of Δ
+"""
 function edgesof( Δ::uniqTriangle )
     edges = [uniqEdge(Δ.vertex1, Δ.vertex2), uniqEdge(Δ.vertex1, Δ.vertex3), uniqEdge(Δ.vertex2, Δ.vertex3)]
     return edges
