@@ -71,6 +71,10 @@ function Triangle( a::Int, b::Int, c::Int )
     return Triangle(u, v, w )
 end
 
+function Triangle(tuple::Tuple{Int, Int, Int})
+    return Triangle(tuple...)
+end
+
 """
     Triangle(verts::Array{Int, 1})
 
