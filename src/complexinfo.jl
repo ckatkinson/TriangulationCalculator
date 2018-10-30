@@ -46,7 +46,7 @@ function edgefan( e::Edges, cpx::SimplicialComplex )
     output = Triangles[]
     twoskel = cpx.K₂
     for tri in twoskel
-        if e in edgesof(tri)
+        if anonymize(e) in edgesof(anonymize(tri))
             push!(output, tri)
         end
     end

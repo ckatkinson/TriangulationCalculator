@@ -317,3 +317,5 @@ function SimplicialComplex( K₂::Array{<:Triangles} )
     return SimplicialComplex(K₀, K₁, K₂)
 end
 
+#I need to add a bunch of these to make printing less ugly.
+Base.show(io::IO, Δ::uniqTriangle) = print(io, "uniqTriangle with vertices ", anonymize.(verticesof(Δ)))
