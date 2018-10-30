@@ -21,14 +21,17 @@ function boundary( P::Gluingpolygon )
 end
 #export boundary
 
+
+#TODO: straighten this out. It has some non-unique madness going on.
 #"add" triangle Δ onto P along boundary edge
-function addalongedge( P::Gluingpolygon, Δ::Triangles, edge::uniqEdge )
+function addalongedge!( P::Gluingpolygon, Δ::Triangles, edge::uniqEdge )
     #these "in"'s probably don't work as is.
     if anonymize(edge) in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
         #do the gluing: First add new vertex to boundary:
         triverts = anonymize.(verticesof(Δ))
         edgeverts = anonymize.(verticesof(edge))
         for vert in setdiff(triverts,edgeverts)
+            P.K₀int = setdiff(P.K₀int, [anonymize(vert)])
             push!(P.K₀bdy, makeunique(vert))         
         end
         #Then add two new uniqEdges to boundary:
@@ -36,6 +39,10 @@ function addalongedge( P::Gluingpolygon, Δ::Triangles, edge::uniqEdge )
         for e in setdiff(triedges, [anonymize(edge)])
             push!(P.K₁bdy, makeunique(e))
         end
+        #and add the gluing edge to the interior edges
+        push!(P.K₁int, anonymize(edge))
+        #remove edge form boundary edges
+        P.K₁bdy = setdiff(P.K₁bdy, [edge])
         #and finally add the triangle:
         push!(P.K₂, Δ)
     else

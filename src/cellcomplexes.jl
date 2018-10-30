@@ -122,8 +122,8 @@ end
 Constructs an edge with vertices `u` and `v` with uuid `id`.
 """
 struct uniqEdge <: Edges
-    head::uniqVertex
-    tail::uniqVertex
+    head::Vertices
+    tail::Vertices
     id::UUID
 end
 export uniqEdge
@@ -133,7 +133,7 @@ export uniqEdge
 
 Constructs an edge with vertices `u` and `v` with randomly seeded uuid.
 """
-function uniqEdge(v::uniqVertex, w::uniqVertex)
+function uniqEdge(v::Vertices, w::Vertices)
     iden = uuid1(rng)
     return uniqEdge(v, w, iden)
 end
@@ -232,6 +232,8 @@ function makeunique(cell::Cells)
             return uniqTriangle(cell.vertex1, cell.vertex2, cell.vertex3)
     end
 end
+
+export makeunique
 
 
 
