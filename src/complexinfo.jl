@@ -77,4 +77,12 @@ function boundary( cpx::OneComplex )
     end
     return bdy
 end
+
+function boundary( P::gluingpolygon )
+    K₀ = P.K₀int ∪ P.K₀bdy
+    K₁ = P.K₁int ∪ P.K₁bdy
+    K₂ = P.K₂
+    cpx = SimplicialComplex(K₀, K₁, K₂)
+    return boundary(cpx)
+end
 export boundary
