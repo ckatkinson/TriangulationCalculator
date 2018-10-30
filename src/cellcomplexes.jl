@@ -192,7 +192,7 @@ end
 """
     anonymize(cell::Cells)
 
-Converts uniqCell to a Cell, wiping out the uuid info
+Converts uniqCell to a Cell, wiping out the uuid info.
 """
 function anonymize( cell::Cells )
     if typeof(cell) == uniqVertex
@@ -211,6 +211,27 @@ function anonymize( cell::Cells )
     return -1
 end
 export anonymize
+
+"""
+    makeunique(cell::Cells)
+
+Returns a uniqCell having the same index data as cell. Careful: right now, if you apply this to an edge or triangle, the edges and triangles INSIDE might not be uniq. I'm not sure what I need just yet...
+"""
+function makeunique(cell::Cells)
+    if :id in fieldnames(typeof(cell))
+        return cell
+    elseif typeof(cell) == Vertex
+            return uniqVertex(cell.index)
+    elseif typeof(cell) == Edge
+            return uniqEdge(cell.head, cell.tail)
+    elseif typeof(cell) == Triangle
+            return uniqTriangle(cell.vertex1, cell.vertex2, cell.vertex3)
+    end
+end
+
+
+
+
 
 """
     edgesof( Δ )
