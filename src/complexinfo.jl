@@ -53,7 +53,6 @@ function edgefan( e::Edges, cpx::SimplicialComplex )
 end
 export edgefan
 
-##################^^^^^THat's one file, I think.
 #computes the boundary of a complex. Here, we'll usually compute it for a
 #subcomplex
 

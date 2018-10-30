@@ -46,7 +46,6 @@ function issurface( cpx::SimplicialComplex)
     return true
 end
 export issurface
-##################^^^^^THat's one file, I think.
 
 #checks of one-manifold is connected
 #
@@ -76,7 +75,6 @@ function isconnected( cpx::OneComplex )
 println("Sorry! This only checks if closed one-manifolds are connected right now.\n 
 		Your complex is not a closed one-manifold")
 end
-##################^^^^^THat's one file, I think.
 
 #Checks of vertex v is surrounded by a single disk of 2-cells. Condition 2 in
 #Kinsley's triangulated surface definition.
