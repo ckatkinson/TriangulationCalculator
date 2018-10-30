@@ -13,8 +13,15 @@ end
 
 #"add" triangle Δ onto P along boundary edge
 function addalongedge( P::gluingpolygon, Δ::Triangles, edge::uniqEdge )
+    #these "in"'s probably don't work as is.
     if edge in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
         #do the gluing
+        triverts = verticesof(Δ)
+        edgeverts = verticesof(edge)
+        for vert in triverts
+            if !(vert in edgeverts)
+                push!(P.K₀bdy, vert) #need to make vert uniq here
+                #...
         
     else
         #gluing is not possible
