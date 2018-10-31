@@ -23,28 +23,39 @@ end
 
 
 #TODO: straighten this out. It has some non-unique madness going on.
-#"add" triangle Δ onto P along boundary edge
-function addalongedge!( P::Gluingpolygon, Δ::Triangles, edge::uniqEdge )
-    #these "in"'s probably don't work as is.
-    if anonymize(edge) in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
+#"add" triangle Δ onto P along boundary edge. Returns new polygon
+function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
+    anonedge = anonymize(edge)
+    if anonedge in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
         #do the gluing: First add new vertex to boundary:
-        triverts = anonymize.(verticesof(Δ))
+        triverts = verticesof(Δ)
         edgeverts = anonymize.(verticesof(edge))
-        for vert in setdiff(triverts,edgeverts)
-            P.K₀int = setdiff(P.K₀int, [anonymize(vert)])
-            push!(P.K₀bdy, makeunique(vert))         
-        end
+        newvertex = setdiff(triverts, edgeverts)[1] #newvertex is already anonymous
+
+        #Construct new skeleta:
+        newK₀int = P.K₀int #Didn't occur to me before: this procedure never makes an interior vertex!!
+        newK₀bdy = push!(copy(P.K₀bdy), makeunique(newvertex)) #newvertex is in the boundary, so needs to be unique
+
         #Then add two new uniqEdges to boundary:
-        triedges = anonymize.(edgesof(Δ))
-        for e in setdiff(triedges, [anonymize(edge)])
-            push!(P.K₁bdy, makeunique(e))
-        end
-        #and add the gluing edge to the interior edges
-        push!(P.K₁int, anonymize(edge))
-        #remove edge form boundary edges
-        P.K₁bdy = setdiff(P.K₁bdy, [edge])
-        #and finally add the triangle:
-        push!(P.K₂, Δ)
+        triedges = edgesof(Δ)
+        println("\n triedges = $triedges \n")
+        newedges = setdiff(anonymize.(triedges), [anonedge])
+        println("\n newedges = $newedges \n")
+        newK₁int = push!(copy(P.K₁int), anonedge)
+        println("\n newK₁int = $newK₁int \n")
+
+
+        #anonymize boundary to allow us to remove edge (easily) from old K₁bdy
+        anonboundary = anonymize.(boundary(P))
+        println("\n boundary of p is $anonboundary\n")
+        anonnewK₁bdy = setdiff(append!(copy(anonboundary), newedges), [anonedge])
+        println("\n anonnewK₁bdy of p is $anonnewK₁bdy\n")
+        newK₁bdy = makeunique.(anonnewK₁bdy)
+
+        newK₂ = push!(copy(P.K₂), Δ)
+
+        newP = Gluingpolygon(newK₀int, newK₀bdy, newK₁int, newK₁bdy, newK₂)
+        return newP
     else
         #gluing is not possible
         println("The edge is not both a boundary edge of polygon and an edge of

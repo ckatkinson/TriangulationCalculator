@@ -23,7 +23,7 @@ include("basictopology.jl")
 export eulercharacteristic, issurface, isconnected
 
 include("gluingpolygon.jl")
-export Gluingpolygon, addalongedge!
+export Gluingpolygon, addalongedge
 
 
 
