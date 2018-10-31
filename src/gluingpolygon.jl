@@ -22,8 +22,11 @@ end
 #export boundary
 
 
-#TODO: straighten this out. It has some non-unique madness going on.
-#"add" triangle Δ onto P along boundary edge. Returns new polygon
+"""
+    addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
+
+Returns the Gluingpolygon resulting from gluing `Δ` to `P` along `edge`.
+"""
 function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
     anonedge = anonymize(edge)
     if anonedge in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
@@ -44,7 +47,6 @@ function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
         newK₁int = push!(copy(P.K₁int), anonedge)
         println("\n newK₁int = $newK₁int \n")
 
-
         #anonymize boundary to allow us to remove edge (easily) from old K₁bdy
         anonboundary = anonymize.(boundary(P))
         println("\n boundary of p is $anonboundary\n")
@@ -62,6 +64,24 @@ function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
                 the triangle") 
         return -1#probably want to figure out how to have an exception/error here
     end
-#export addalongedge
-
 end
+
+"""
+    makepolygonsurface( cpx::SimplicialComplex )
+
+Returns Gluingpolygon representing the surface underlying `cpx`.
+"""
+function makepolygonsurface( cpx::SimplicialComplex )
+end
+
+
+
+
+
+
+
+
+
+
+
+
