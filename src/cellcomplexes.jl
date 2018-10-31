@@ -344,6 +344,19 @@ function SimplicialComplex( K₂::Array{<:Triangles} )
     return SimplicialComplex(K₀, K₁, K₂)
 end
 
-#I need to add a bunch of these to make printing uniq stuff less ugly. This
-#might be excessively stripped down...
+
 Base.show(io::IO, Δ::uniqTriangle) = print(io, "uniqTriangle with vertices ", anonymize.(verticesof(Δ)))
+Base.show(io::IO, v::Vertices) = print(io, "Vertex: ", v.index)
+Base.show(io::IO, e::Edge) = print(io, "Edge: ", e.head.index, "--", e.tail.index)
+Base.show(io::IO, e::uniqEdge) = print(io, "uEdge: ", e.head.index, "--", e.tail.index)
+function Base.show(io::IO, Δ::Triangle)  
+    a, b, c = Δ.vertex1.index, Δ.vertex2.index, Δ.vertex3.index
+    print(io, "Tri: Δ",a,b,c )
+end
+
+
+Base.show(io::IO, cpx::SimplicialComplex) = print(io, 
+"Simplicial Complex:
+0-skeleton: ", cpx.K₀,"
+1-skeleton: ", cpx.K₁,"
+2-skeleton: ", cpx.K₂)
