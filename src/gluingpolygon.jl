@@ -10,7 +10,12 @@ mutable struct Gluingpolygon
     K₁bdy::Array{uniqEdge}
     K₂::Array{Triangle}
 end
-#export Gluingpolygon
+
+function Gluingpolygon( tri::Triangles )
+    K₀bdy = makeunique.(verticesof(tri))
+    K₁bdy = makeunique.(edgesof(tri))
+    return Gluingpolygon( [], K₀bdy, [], K₁bdy, [tri])
+end
 
 function boundary( P::Gluingpolygon )
     K₀ = P.K₀int ∪ P.K₀bdy
@@ -19,7 +24,6 @@ function boundary( P::Gluingpolygon )
     cpx = SimplicialComplex(K₀, K₁, K₂)
     return boundary(cpx)
 end
-#export boundary
 
 
 """
@@ -72,7 +76,24 @@ end
 Returns Gluingpolygon representing the surface underlying `cpx`.
 """
 function makepolygonsurface( cpx::SimplicialComplex )
+    triangles = copy(cpx.K₂)
+    inittriangle = triangles[1]
+    triangles = filter(x->x≠inittriangle, triangles)
+    polygon = Gluingpolygon( inittriangle )
+    while length(triangles)≠0
+        for edge in anonymize.(boundary(polygon))
+            new = edgefan(edge, cpx) ∩ triangles
+            if length(new) ≠ 0
+                newtriangle = new[1]
+                polygon = addalongedge(polygon, newtriangle, edge)
+                triangles = filter(x->x≠newtriangle, triangles)
+            end
+        end
+    end
+    return polygon
 end
+#I don't think this quite works yet. It compiles and runs, but I'm not sure
+#result is correct.
 
 
 

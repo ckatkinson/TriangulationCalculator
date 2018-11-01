@@ -351,7 +351,7 @@ Base.show(io::IO, e::Edge) = print(io, "Edge: ", e.head.index, "--", e.tail.inde
 Base.show(io::IO, e::uniqEdge) = print(io, "uEdge: ", e.head.index, "--", e.tail.index)
 function Base.show(io::IO, Δ::Triangle)  
     a, b, c = Δ.vertex1.index, Δ.vertex2.index, Δ.vertex3.index
-    print(io, "Tri: Δ",a,b,c )
+    print(io, "Tri: Δ",a,".",b,".",c )
 end
 
 
