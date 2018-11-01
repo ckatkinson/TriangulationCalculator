@@ -45,17 +45,12 @@ function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
 
         #Then add two new uniqEdges to boundary:
         triedges = edgesof(Δ)
-        println("\n triedges = $triedges \n")
         newedges = setdiff(anonymize.(triedges), [anonedge])
-        println("\n newedges = $newedges \n")
         newK₁int = push!(copy(P.K₁int), anonedge)
-        println("\n newK₁int = $newK₁int \n")
 
         #anonymize boundary to allow us to remove edge (easily) from old K₁bdy
         anonboundary = anonymize.(boundary(P))
-        println("\n boundary of p is $anonboundary\n")
         anonnewK₁bdy = setdiff(append!(copy(anonboundary), newedges), [anonedge])
-        println("\n anonnewK₁bdy of p is $anonnewK₁bdy\n")
         newK₁bdy = makeunique.(anonnewK₁bdy)
 
         newK₂ = push!(copy(P.K₂), Δ)
@@ -92,8 +87,8 @@ function makepolygonsurface( cpx::SimplicialComplex )
     end
     return polygon
 end
-#I don't think this quite works yet. It compiles and runs, but I'm not sure
-#result is correct.
+#IT WORKS!!!! (I don't think boundary works quite right. The problem seems to be
+#with K₁bdy. I think it's probably wrong in addalongedge
 
 
 

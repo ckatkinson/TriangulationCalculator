@@ -177,6 +177,13 @@ function uniqTriangle( a::Int, b::Int, c::Int )
     return uniqTriangle(u, v, w, iden)
 end
 
+function uniqTriangle( u::Vertices, v::Vertices, w::Vertices )
+    uu = makeunique(u)
+    uv = makeunique(v)
+    uw = makeunique(w)
+    iden = uuid1(rng)
+    return uniqTriangle(uu, uv, uw, iden)
+end
 """
     uniqTriangle(verts::Array{Int, 1})
 
@@ -346,9 +353,10 @@ end
 
 
 Base.show(io::IO, Δ::uniqTriangle) = print(io, "uniqTriangle with vertices ", anonymize.(verticesof(Δ)))
-Base.show(io::IO, v::Vertices) = print(io, "Vertex: ", v.index)
+Base.show(io::IO, v::Vertex) = print(io, "Vertex: ", v.index)
+Base.show(io::IO, v::uniqVertex) = print(io, "Vertex*: ", v.index)
 Base.show(io::IO, e::Edge) = print(io, "Edge: ", e.head.index, "--", e.tail.index)
-Base.show(io::IO, e::uniqEdge) = print(io, "uEdge: ", e.head.index, "--", e.tail.index)
+Base.show(io::IO, e::uniqEdge) = print(io, "uEdge: ", e.head.index, "-*-", e.tail.index)
 function Base.show(io::IO, Δ::Triangle)  
     a, b, c = Δ.vertex1.index, Δ.vertex2.index, Δ.vertex3.index
     print(io, "Tri: Δ",a,".",b,".",c )
