@@ -18,12 +18,21 @@ function Gluingpolygon( tri::Triangles )
 end
 
 function boundary( P::Gluingpolygon )
-    K₀ = P.K₀int ∪ P.K₀bdy
-    K₁ = P.K₁int ∪ P.K₁bdy
-    K₂ = P.K₂
-    cpx = SimplicialComplex(K₀, K₁, K₂)
-    return boundary(cpx)
+    K₀ = P.K₀bdy
+    K₁ = P.K₁bdy
+    cpx = OneComplex(K₀, K₁)
+    return cpx
 end
+
+
+
+#function boundary( P::Gluingpolygon )
+#    K₀ = P.K₀int ∪ P.K₀bdy
+#    K₁ = P.K₁int ∪ P.K₁bdy
+#    K₂ = P.K₂
+#    cpx = SimplicialComplex(K₀, K₁, K₂)
+#    return boundary(cpx)
+#end
 
 
 """
@@ -33,7 +42,7 @@ Returns the Gluingpolygon resulting from gluing `Δ` to `P` along `edge`.
 """
 function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
     anonedge = anonymize(edge)
-    if anonedge in anonymize.(boundary(P)) ∩ anonymize.(edgesof(Δ))
+    if anonedge in anonymize.(boundary(P).K₁) ∩ anonymize.(edgesof(Δ))
         #do the gluing: First add new vertex to boundary:
         triverts = verticesof(Δ)
         edgeverts = anonymize.(verticesof(edge))
@@ -49,9 +58,10 @@ function addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
         newK₁int = push!(copy(P.K₁int), anonedge)
 
         #anonymize boundary to allow us to remove edge (easily) from old K₁bdy
-        anonboundary = anonymize.(boundary(P))
+        anonboundary = anonymize.(boundary(P).K₁)
         anonnewK₁bdy = setdiff(append!(copy(anonboundary), newedges), [anonedge])
         newK₁bdy = makeunique.(anonnewK₁bdy)
+        println("\nboundary edges being added in are $newK₁bdy\n")
 
         newK₂ = push!(copy(P.K₂), Δ)
 
@@ -76,7 +86,7 @@ function makepolygonsurface( cpx::SimplicialComplex )
     triangles = filter(x->x≠inittriangle, triangles)
     polygon = Gluingpolygon( inittriangle )
     while length(triangles)≠0
-        for edge in anonymize.(boundary(polygon))
+        for edge in anonymize.(boundary(polygon).K₁)
             new = edgefan(edge, cpx) ∩ triangles
             if length(new) ≠ 0
                 newtriangle = new[1]
@@ -87,9 +97,17 @@ function makepolygonsurface( cpx::SimplicialComplex )
     end
     return polygon
 end
-#IT WORKS!!!! (I don't think boundary works quite right. The problem seems to be
-#with K₁bdy. I think it's probably wrong in addalongedge
+#IT WORKS!!!! (almost... The remaining issue is that the boundary edges are each
+#only added in once. Also, the more daunting task of figuring out how to
+#determine orientation around the boundary is still there)
 
+function Base.show(io::IO, p::Gluingpolygon)  
+    print(io, "Interior vertices: ", p.K₀int,"\n")
+    print(io, "Boundary vertices: ", p.K₀bdy,"\n")
+    print(io, "Interior edges: ", p.K₁int,"\n")
+    print(io, "Boundary edges: ", p.K₁bdy,"\n")
+    print(io, "Triangles: ", p.K₂,"\n")
+end
 
 
 
