@@ -15,33 +15,6 @@ function Gluingpolygon( triangle::Triangles )
     return Gluingpolygon([e1,e2,e3])
 end
 
-#OK! I've got the right idea. I don't need to worry about the vertices in the
-#gluing polygon. I don't even need to keep track of the triangles. I think just
-#keeping track of boundary edges is enough to make makepolygonsurface work
-#
-#Everything needs to be changed (via simplifying...)
-
-
-#Also, when I actually use this in the makegluingpolygon function, I want to be
-#sure that the vertices have the same ids when two edges are meant to be glued
-
-#function boundary( P::Gluingpolygon )
-    #K₁ = P.K₁bdy
-    #cpx = OneComplex(K₁)
-    #return cpx
-#end
-#Don't need that anymore!
-
-
-#function boundary( P::Gluingpolygon )
-#    K₀ = P.K₀int ∪ P.K₀bdy
-#    K₁ = P.K₁int ∪ P.K₁bdy
-#    K₂ = P.K₂
-#    cpx = SimplicialComplex(K₀, K₁, K₂)
-#    return boundary(cpx)
-#end
-
-
 """
     addalongedge( P::Gluingpolygon, Δ::Triangle, edge::Edges )
 
@@ -84,8 +57,8 @@ function makepolygonsurface( cpx::SimplicialComplex )
     triangles = filter(x->x≠inittriangle, triangles)
     polygon = Gluingpolygon( inittriangle )
     while length(triangles)≠0
-        for edge in anonymize.(polygon.K₁)
-            new = edgefan(edge, cpx) ∩ triangles
+        for edge in polygon.K₁
+            new = edgefan(anonymize(edge), cpx) ∩ triangles
             if length(new) ≠ 0
                 newtriangle = new[1]
                 addalongedge!(polygon, newtriangle, edge)
@@ -99,9 +72,53 @@ end
 #only added in once. Also, the more daunting task of figuring out how to
 #determine orientation around the boundary is still there)
 
-function Base.show(io::IO, p::Gluingpolygon)  
-    print(io, "Boundary edges: ", p.K₁,"\n")
+function labelededge( edge::Edges, label::Char )
+    h = anonymize(edge.head).index
+    t = anonymize(edge.tail).index
+    return string(h, "-",label,"-", t)
 end
+
+
+function Base.show(io::IO, p::Gluingpolygon)  
+    label = 97 #Char(97) is 'a'
+    labeldict = Dict()
+    for edge in p.K₁
+        if !(edge.head.id in keys(labeldict))
+            labeldict[edge.head.id] = Char(label)
+            label += 1
+        elseif !(edge.tail.id in keys(labeldict))
+            labeldict[edge.tail.id] = Char(label)
+            label += 1
+        end
+    end
+
+    output = ""
+    for edge in p.K₁
+        h = edge.head.index
+        t = edge.tail.index
+        output = output * labeldict[edge.head.id] * "-" * string(h) * string(t) * "-" * labeldict[edge.tail.id] * ", "
+    end
+
+    print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n")
+end
+
+#function Base.show(io::IO, p::Gluingpolygon)  
+#    label = 97 #Char(97) is 'a'
+#    labeldict = Dict()
+#    for edge in p.K₁
+#        if !(edge.id in keys(labeldict))
+#            labeldict[edge.id] = Char(label)
+#            label += 1
+#        end
+#    end
+#
+#    output = ""
+#    for edge in p.K₁
+#        output = output * labelededge(edge, labeldict[edge.id]) * ", "
+#    end
+#
+#    print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n")
+#end
 
 
 
