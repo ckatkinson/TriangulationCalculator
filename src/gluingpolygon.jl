@@ -1,9 +1,3 @@
-#this should be like a SimplicalComplex but with "interior" edges and vertices
-#nonunique and boundary edges and vertices uniqCells. I think it should be
-#mutable so that I an slowly build it up, one triangle at a time. Or not. We'll
-#see. Also, it should be simplicial. May have to implement barycentric subdiv
-#elsewhere...
-#
 mutable struct Gluingpolygon
     K₁::Array{uniqEdge}
 end
@@ -68,9 +62,6 @@ function makepolygonsurface( cpx::SimplicialComplex )
     end
     return polygon
 end
-#IT WORKS!!!! (almost... The remaining issue is that the boundary edges are each
-#only added in once. Also, the more daunting task of figuring out how to
-#determine orientation around the boundary is still there)
 
 function labelededge( edge::Edges, label::Char )
     h = anonymize(edge.head).index
@@ -83,40 +74,25 @@ function Base.show(io::IO, p::Gluingpolygon)
     label = 97 #Char(97) is 'a'
     labeldict = Dict()
     for edge in p.K₁
-        if !(edge.head.index in keys(labeldict))
-            labeldict[edge.head.index] = Char(label)
+        if !(edge.head.id in keys(labeldict))
+            labeldict[edge.head.id] = Char(label)
             label += 1
-        elseif !(edge.tail.index in keys(labeldict))
-            labeldict[edge.tail.index] = Char(label)
+        elseif !(edge.tail.id in keys(labeldict))
+            labeldict[edge.tail.id] = Char(label)
             label += 1
         end
     end
 
     output = ""
     for edge in p.K₁
-        output = output * labeldict[edge.head.index] * "-" * "-" * labeldict[edge.tail.index] * ", "
+        h = string(edge.head.index)
+        t = string(edge.tail.index)
+        output *= labeldict[edge.head.id] * "-"* h * t * "-" * labeldict[edge.tail.id] * ", "
     end
 
     print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n")
 end
 
-#function Base.show(io::IO, p::Gluingpolygon)  
-#    label = 97 #Char(97) is 'a'
-#    labeldict = Dict()
-#    for edge in p.K₁
-#        if !(edge.id in keys(labeldict))
-#            labeldict[edge.id] = Char(label)
-#            label += 1
-#        end
-#    end
-#
-#    output = ""
-#    for edge in p.K₁
-#        output = output * labelededge(edge, labeldict[edge.id]) * ", "
-#    end
-#
-#    print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n")
-#end
 
 
 
