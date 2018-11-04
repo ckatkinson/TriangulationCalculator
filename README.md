@@ -48,7 +48,7 @@ polygon with identifications representing the surface via
 
 This will return something of the form
     
-    -(a)-14-(b)-45-(c)-52-(d)-25-(e)-53-(f)-35-(g)-54-(h)-41-(a)-
+    -(a)-1,4-(b)-4,5-(c)-5,2-(d)-2,5-(e)-5,3-(f)-3,5-(g)-5,4-(h)-4,1-(a)-
 
 The letters in parenthesis represent the vertices of the polygon. The numerals
 between represent edge pairings with gluing represented by the order of the
