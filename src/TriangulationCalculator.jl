@@ -25,6 +25,9 @@ export eulercharacteristic, issurface, isconnected
 include("gluingpolygon.jl")
 export Gluingpolygon, addalongedge, makepolygonsurface
 
+include("surfaceid.jl")
+export isorientable, surfaceid
+
 
 
 end

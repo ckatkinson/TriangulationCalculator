@@ -26,8 +26,6 @@ function addalongedge!( P::Gluingpolygon, Δ::Triangle, edge::uniqEdge )
         #make two new edges for P with the correct vertices:
         newedge1 = uniqEdge( makeunique(edge.head), newvertex )
         newedge2 = uniqEdge( newvertex, makeunique(edge.tail) )
-        #newedge1 = uniqEdge( edge.head, newvertex )
-        #newedge2 = uniqEdge( newvertex, edge.tail )
 
         #remove edge from P:
         P.K₁ = filter(x->x≠edge, P.K₁)
@@ -70,6 +68,7 @@ function makepolygonsurface( cpx::SimplicialComplex )
     end
     return polygon
 end
+export makepolygonalsurface
 
 function labelededge( edge::Edges, label::Char )
     h = anonymize(edge.head).index
@@ -145,7 +144,6 @@ function Base.show(io::IO, p::Gluingpolygon)
     output *= "(" * labeldict[edgesordered[end].tail.id] *")-"
 
     print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n\n")
-    println("Each (x) is a vertex and the mid-edge numerals indicate gluing. The last vertex is the same as the first.")
 end
 
 

@@ -30,3 +30,7 @@ word = TriangulationCalculator.surfacerelation(dp)
 println(dp)
 println(word)
 
+b = isorientable(dcpx)
+println("dcpx is orientable: $b")
+surfaceid(dcpx)
+
