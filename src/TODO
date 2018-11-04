@@ -1,2 +1,0 @@
-There's an issue with edges with "out-of-order" vertices. Need to think about
-this. (ie Edge(1,3) may or may not be in Triangle(1,2,3)...)
