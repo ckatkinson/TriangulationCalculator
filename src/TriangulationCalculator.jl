@@ -8,7 +8,7 @@ include("cellcomplexes.jl")
 export Cells, Vertices, Edges, Triangles #abstract types
 export Vertex, Edge, Triangle, uniqVertex, uniqEdge, uniqTriangle
 export edgesof, verticesof
-export equiv
+export equiv, reverseedge
 export SimplicialComplex, OneComplex
 
 include("complexinfo.jl")

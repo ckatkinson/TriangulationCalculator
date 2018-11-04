@@ -3,6 +3,8 @@
 #This file contains basic simplicial complex constructors and operations to
 #access basic combinatorial info about them.
 
+import Base.in #we're adding to in below
+
 #Type hierarchy:
 abstract type Cells end
 abstract type Vertices <: Cells end
@@ -286,6 +288,8 @@ end
 export edgesof, verticesof
 
 
+
+
 ###equiv ignores uuids when checking for equivalence. 
 
 function equiv( x::Cells, y::Cells)
@@ -297,7 +301,21 @@ function equiv( x::Cells, y::Cells)
 end
 export equiv
 
+function reverseedge( edge::Edges )
+    temptail = edge.head
+    temphead = edge.tail
+    if typeof(edge) == uniqEdge
+        return uniqEdge(temphead, temptail, edge.id)
+    else
+        return Edge(temphead, temptail)
+    end
+end
 
+function in(edge::Edges, Δ::Triangles)
+    Δverts = anonymize.(verticesof(Δ))
+    return (anonymize(edge.head) in Δverts) && (anonymize(edge.tail) in Δverts)
+end
+    
 
 
 ####One-complexes:
