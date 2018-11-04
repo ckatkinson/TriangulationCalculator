@@ -139,7 +139,7 @@ function Base.show(io::IO, p::Gluingpolygon)
     for edge in edgesordered
         h = string(edge.head.index)
         t = string(edge.tail.index)
-        output *= "("*labeldict[edge.head.id]*")" * "-"* h * t * "-" 
+        output *= "("*labeldict[edge.head.id]*")" * "-"* h * "," * t * "-" 
     end
     output *= "(" * labeldict[edgesordered[end].tail.id] *")-"
 

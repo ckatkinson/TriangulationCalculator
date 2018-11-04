@@ -39,7 +39,29 @@ Also, we can compute its Euler characteristic
 
     eulercharacteristic(cpx)
     
-and get 2. If we knew that cpx was orientable, we would know what surface it was (if we had covered chapter 5 at this point (which we haven't (but will soon))).
- 
- 
+and get 2. 
 
+If you're trying to understand the topology of a surface, you can get a planar
+polygon with identifications representing the surface via
+
+    makepolygonsurface(cpx)
+
+This will return something of the form
+    
+    -(a)-14-(b)-45-(c)-52-(d)-25-(e)-53-(f)-35-(g)-54-(h)-41-(a)-
+
+The letters in parenthesis represent the vertices of the polygon. The numerals
+between represent edge pairings with gluing represented by the order of the
+numerals. The left-most vertices and right-most vertices are the same vertex.
+
+To get a string representing a surface relation (see section on Tietze
+transformations in the textbook), call the following:
+
+    p = makepolyonsurface(cpx)
+    surfacerelation(p)
+
+To identify a surface, represent it as a SimplicialComplex and then
+
+    surfaceid(cpx)
+
+will print its topological type.
