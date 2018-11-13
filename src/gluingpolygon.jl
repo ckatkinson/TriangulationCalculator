@@ -100,6 +100,8 @@ function edgesinorder( p::Gluingpolygon )
     return output
 end
 
+#THERE's a bug in this: If there are two many vertices, then we run out of
+#characters...
 function surfacerelation( p::Gluingpolygon )
     eop = edgesinorder(p)
     label = 97 #Char(97) is 'a'
@@ -126,10 +128,12 @@ function Base.show(io::IO, p::Gluingpolygon)
     edgesordered = edgesinorder(p)
     for edge in edgesordered
         if !(edge.head.id in keys(labeldict))
-            labeldict[edge.head.id] = Char(label)
+            #labeldict[edge.head.id] = Char(label)
+            labeldict[edge.head.id] = label
             label += 1
         elseif !(edge.tail.id in keys(labeldict))
-            labeldict[edge.tail.id] = Char(label)
+            #labeldict[edge.tail.id] = Char(label)
+            labeldict[edge.tail.id] = label
             label += 1
         end
     end
@@ -139,9 +143,11 @@ function Base.show(io::IO, p::Gluingpolygon)
     for edge in edgesordered
         h = string(edge.head.index)
         t = string(edge.tail.index)
-        output *= "("*labeldict[edge.head.id]*")" * "-"* h * "," * t * "-" 
+        #output *= "("*labeldict[edge.head.id]*")" * "-"* h * "," * t * "-" 
+        output *= "("*string(labeldict[edge.head.id])*")" * "-"* h * "," * t * "-" 
     end
-    output *= "(" * labeldict[edgesordered[end].tail.id] *")-"
+    #output *= "(" * labeldict[edgesordered[end].tail.id] *")-"
+    output *= "(" * string(labeldict[edgesordered[end].tail.id]) *")-"
 
     print(io,"Boundary of gluing polygon has labeled edges:\n", output,"\n\n")
 end

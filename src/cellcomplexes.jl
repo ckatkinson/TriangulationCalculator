@@ -97,6 +97,17 @@ function Triangle( verts::Array{Int,1} )
     end
 end
 
+
+letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+decode = Dict(zip(letters, [n for n=1:26]))
+function Triangle( string::String )
+    varray = Int[]
+    for c in string
+        push!(varray, decode[c])
+    end
+    return Triangle(varray)
+end
+
 """
     uniqVertex(a,id)
 
