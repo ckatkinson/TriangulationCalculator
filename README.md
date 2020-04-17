@@ -1,5 +1,5 @@
 # TriangulationCalculator
-Implements some of the concepts from my topology course related to triangulations of surfaces.
+Implements some of the concepts from my Fall 2018 topology course related to triangulations of surfaces.
 
 This is a work-in-progress and will likely change drastically.
 
