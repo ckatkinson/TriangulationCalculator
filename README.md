@@ -1,10 +1,10 @@
 # TriangulationCalculator
-Implements some of the concepts from my Fall 2018 topology course related to triangulations of surfaces.
+Implements some of the concepts from my topology course related to triangulations of surfaces.
 
 This is a work-in-progress and will likely change drastically.
 
 I'm teaching an introductory topology course (Math 4221) at UMN Morris. We're following L. Christine Kinsley's 
-book "Topology of Surfaces". Just to see if I could, I decided to learn a bit more about Julia by attempting to implement some of the triangulation stuff.
+book "Topology of Surfaces". I decided to learn a bit more about Julia by attempting to implement some of the triangulation stuff.
 
 To use this, first be sure to have a working Julia installation.
 
